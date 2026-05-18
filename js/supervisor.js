@@ -1,20 +1,15 @@
-/**
- * supervisor.js — Panel de Supervisor (Prototipo Frontend)
- * Depende de: Auth.js, Store.js
- */
 document.addEventListener('DOMContentLoaded', () => {
 
     Auth.requireRole('supervisor');
-
     const session = Auth.getSession();
     setSessionUI(session);
 
     document.getElementById('btn-logout').addEventListener('click', () => Auth.logout());
-
-    const wrapper = document.getElementById('wrapper');
-    document.getElementById('menu-toggle').addEventListener('click', () => wrapper.classList.toggle('toggled'));
+    document.getElementById('menu-toggle').addEventListener('click', () =>
+        document.getElementById('wrapper').classList.toggle('toggled'));
 
     initNav();
+    renderTickets('todos');
     renderCalendario();
     renderEmpleadosLateral();
 
@@ -24,20 +19,73 @@ document.addEventListener('DOMContentLoaded', () => {
         const empleadoId = parseInt(document.getElementById('sch-empleado').value);
         const dia        = document.getElementById('sch-dia').value;
         const hora       = document.getElementById('sch-hora').value;
-
         if (!empleadoId) { showToast('Selecciona un empleado.', 'warning'); return; }
-
         try {
             Store.addSchedule({ empleadoId, dia, hora, tipo: 'fijo' });
             e.target.reset();
             renderCalendario();
             showToast('Horario fijo agregado.', 'success');
         } catch (error) {
-            showToast(error.message, 'danger'); // Alerta del Motor de Reglas
+            showToast(error.message, 'danger');
         }
     });
 
-    /* ── RENDER CALENDARIO (7 días x 4 franjas) ── */
+    // Filtros de tickets
+    document.querySelectorAll('.filter-tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderTickets(btn.dataset.filtro);
+        });
+    });
+
+    /* ── TICKETS ── */
+    function renderTickets(filtro) {
+        let tickets = Store.getTickets();
+        if (filtro !== 'todos') {
+            // puede ser un rol o un estado
+            tickets = tickets.filter(t => t.rol === filtro || t.estado === filtro);
+        }
+        const contenedor = document.getElementById('lista-tickets-supervisor');
+        if (!tickets.length) {
+            contenedor.innerHTML = '<div class="text-muted text-center py-5"><i class="fa-solid fa-inbox fs-1 mb-3 d-block"></i>No hay tickets en esta categoría.</div>';
+            return;
+        }
+        const rolIcon = { cajero: 'fa-cash-register', reponedor: 'fa-boxes-stacked', limpieza: 'fa-broom' };
+        const prioColor = { Alta: 'danger', Media: 'warning', Baja: 'success' };
+        const rolColor  = { cajero: '#4f46e5', reponedor: '#059669', limpieza: '#7c3aed' };
+        contenedor.innerHTML = tickets.map(t => `
+            <div class="ticket-supervisor" style="border-left: 4px solid ${rolColor[t.rol]||'#94a3b8'};">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <strong>${t.titulo}</strong>
+                        <div class="text-muted small mt-1">${t.descripcion}</div>
+                    </div>
+                    <span class="ticket-badge-${t.estado} ms-3">${t.estado.charAt(0).toUpperCase()+t.estado.slice(1)}</span>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge" style="background:${rolColor[t.rol]||'#64748b'}"><i class="fa-solid ${rolIcon[t.rol]||'fa-user'} me-1"></i>${t.rol.charAt(0).toUpperCase()+t.rol.slice(1)}</span>
+                    <span class="badge bg-${prioColor[t.prioridad]||'secondary'}">${t.prioridad}</span>
+                    <span class="badge bg-light text-dark border">${t.categoria}</span>
+                    <span class="text-muted small">por ${t.autor}</span>
+                    <span class="text-muted small">${new Date(t.fecha).toLocaleDateString('es-PE')}</span>
+                    <div class="ms-auto d-flex gap-1">
+                        ${t.estado !== 'proceso'   ? `<button class="btn-estado btn-estado-proceso"  onclick="cambiarEstado(${t.id},'proceso')">En proceso</button>` : ''}
+                        ${t.estado !== 'resuelto'  ? `<button class="btn-estado btn-estado-resuelto" onclick="cambiarEstado(${t.id},'resuelto')">Resuelto</button>` : ''}
+                    </div>
+                </div>
+            </div>`).join('');
+    }
+
+    // Exponer globalmente para los onclick
+    window.cambiarEstado = function(id, estado) {
+        Store.updateTicketEstado(id, estado);
+        const filtroActivo = document.querySelector('.filter-tab.active');
+        renderTickets(filtroActivo ? filtroActivo.dataset.filtro : 'todos');
+        showToast(`Ticket marcado como "${estado}".`, 'success');
+    };
+
+    /* ── RENDER CALENDARIO ── */
     function renderCalendario() {
         const DIAS   = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
         const HORAS  = ['08:00','10:00','14:00','18:00'];
@@ -56,24 +104,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const tbody = document.getElementById('calendario-body');
+        if (!tbody) return;
         tbody.innerHTML = '';
 
         HORAS.forEach(hora => {
             const tr = document.createElement('tr');
             tr.innerHTML = `<td class="fw-bold text-muted border-end">${hora}</td>`;
-
             DIAS.forEach(dia => {
                 const sch = schedules.find(s => s.hora === hora && s.dia === dia);
                 const td  = document.createElement('td');
                 td.className = 'p-1';
-
                 if (sch) {
                     const emp = employees.find(e => e.id === sch.empleadoId);
-                    const label = emp ? emp.nombre : '?';
                     td.innerHTML = `
                         <div class="turno-fijo p-2 rounded text-white shadow-sm d-flex align-items-center justify-content-between">
-                            <span><i class="fa-solid fa-lock small me-1"></i>${label}</span>
-                            <span class="remove-sch" data-id="${sch.id}" title="Quitar" style="cursor:pointer;opacity:0.7;font-size:0.75rem;">✕</span>
+                            <span><i class="fa-solid fa-lock small me-1"></i>${emp ? emp.nombre : '?'}</span>
+                            <span class="remove-sch" data-id="${sch.id}" style="cursor:pointer;opacity:0.7;font-size:0.75rem;">✕</span>
                         </div>`;
                     td.querySelector('.remove-sch').addEventListener('click', function() {
                         Store.deleteSchedule(parseInt(this.dataset.id));
@@ -88,37 +134,31 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             tbody.appendChild(tr);
         });
-
         initDragAndDrop();
     }
 
-    /* ── PANEL LATERAL EMPLEADOS ── */
     function renderEmpleadosLateral() {
         const employees = Store.getEmployees();
         const fijos = employees.filter(e => e.tipo === 'fijo');
         const flex  = employees.filter(e => e.tipo === 'flexible');
-
         const listFijos = document.getElementById('list-fijos');
-        listFijos.innerHTML = fijos.map(e => `
+        if (listFijos) listFijos.innerHTML = fijos.map(e => `
             <div class="list-group-item p-2 small">
                 <i class="fa-regular fa-user me-1"></i> ${e.nombre}
                 <span class="badge bg-${Store.getRolColor(e.rol)} ms-1" style="font-size:0.65rem;">${Store.getRolLabel(e.rol)}</span>
             </div>`).join('');
-
         const listFlex = document.getElementById('list-flex');
-        listFlex.innerHTML = flex.map(e => `
-            <div class="list-group-item p-2 small border-start border-success border-4 empleado-drag cursor-grab"
+        if (listFlex) listFlex.innerHTML = flex.map(e => `
+            <div class="list-group-item p-2 small border-start border-success border-4 empleado-drag"
                  data-nombre="${e.nombre}" data-id="${e.id}" draggable="true">
                 <i class="fa-solid fa-grip-vertical text-muted me-2"></i>${e.nombre}
                 <span class="badge bg-${Store.getRolColor(e.rol)} ms-1" style="font-size:0.65rem;">${Store.getRolLabel(e.rol)}</span>
             </div>`).join('');
     }
 
-    /* ── DRAG & DROP CON MOTOR DE REGLAS ── */
     function initDragAndDrop() {
         let draggedName = '';
         let draggedId   = null;
-
         document.querySelectorAll('.empleado-drag').forEach(el => {
             el.setAttribute('draggable', 'true');
             el.addEventListener('dragstart', (e) => {
@@ -129,58 +169,40 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             el.addEventListener('dragend', () => el.classList.remove('dragging'));
         });
-
         document.querySelectorAll('.drop-zone').forEach(zone => {
-            zone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                if (!zone.querySelector('.turno-flexible')) zone.classList.add('drop-hover');
-            });
+            zone.addEventListener('dragover', (e) => { e.preventDefault(); if (!zone.querySelector('.turno-flexible')) zone.classList.add('drop-hover'); });
             zone.addEventListener('dragleave', () => zone.classList.remove('drop-hover'));
-            
             zone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 zone.classList.remove('drop-hover');
                 if (zone.querySelector('.turno-flexible')) return;
-
                 try {
-                    // Intenta guardar. Si viola una regla, Store.addSchedule lanzará un error.
                     const nuevoTurno = Store.addSchedule({ empleadoId: draggedId, dia: zone.dataset.dia, hora: zone.dataset.hora, tipo: 'flexible' });
-
-                    // Si no hubo error, dibuja el bloque en la interfaz
                     const turno = document.createElement('div');
                     turno.className = 'turno-flexible p-2 rounded text-white shadow-sm d-flex align-items-center justify-content-between';
                     turno.innerHTML = `
                         <span><i class="fa-solid fa-grip-vertical small me-1"></i>${draggedName}</span>
-                        <span class="remove-turno" data-id="${nuevoTurno.id}" title="Quitar" style="cursor:pointer;opacity:0.7;font-size:0.75rem;">✕</span>`;
+                        <span class="remove-turno" data-id="${nuevoTurno.id}" style="cursor:pointer;opacity:0.7;font-size:0.75rem;">✕</span>`;
                     zone.appendChild(turno);
                     zone.classList.remove('drop-zone', 'bg-light');
-
                     turno.querySelector('.remove-turno').addEventListener('click', function() {
                         Store.deleteSchedule(parseInt(this.dataset.id));
                         turno.remove();
                         zone.classList.add('drop-zone', 'bg-light');
                     });
-                    
-                    showToast('Turno flexible asignado correctamente.', 'success');
-
+                    showToast('Turno flexible asignado.', 'success');
                 } catch (error) {
-                    // EL MOTOR DE REGLAS DETECTÓ UN ERROR (Cruce u Horas límite)
                     showToast(error.message, 'danger');
                 }
             });
         });
     }
 
-    /* Funciones UI básicas */
     function initNav() {
         const navLinks    = document.querySelectorAll('#sidebar-wrapper .list-group-item');
         const sections    = document.querySelectorAll('.view-section');
         const tituloVista = document.getElementById('vista-titulo');
-        const titulos = {
-            'sec-dashboard': 'Dashboard de Cobertura',
-            'sec-horarios':  'Constructor de Horarios',
-            'sec-agregar':   'Agregar Horario Fijo',
-        };
+        const titulos = { 'sec-tickets': 'Tickets Recibidos', 'sec-horarios': 'Constructor de Horarios', 'sec-agregar': 'Agregar Horario Fijo' };
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -191,6 +213,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const active = document.getElementById(targetId);
                 if (active) active.style.display = 'block';
                 if (tituloVista && titulos[targetId]) tituloVista.textContent = titulos[targetId];
+                if (targetId === 'sec-horarios') { renderCalendario(); renderEmpleadosLateral(); }
+                if (targetId === 'sec-tickets') {
+                    const filtroActivo = document.querySelector('.filter-tab.active');
+                    renderTickets(filtroActivo ? filtroActivo.dataset.filtro : 'todos');
+                }
             });
         });
     }
@@ -207,6 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!t) return;
         t.querySelector('.toast-body').textContent = msg;
         t.className = `toast align-items-center text-white bg-${type} border-0 show`;
-        setTimeout(() => t.classList.remove('show'), 3500); // Se oculta automáticamente después de 3.5s
+        setTimeout(() => t.classList.remove('show'), 3500);
     }
 });

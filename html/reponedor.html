@@ -3,101 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeForge - Mi Horario</title>
+    <title>TimeForge - Reponedor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style_reponedor.css">
 </head>
 <body>
 <div class="d-flex" id="wrapper">
-
-    <!-- SIDEBAR -->
-    <aside class="bg-dark text-white" id="sidebar-wrapper">
-        <div class="sidebar-heading text-center py-4 fw-bold border-bottom border-secondary">
+    <aside id="sidebar-wrapper">
+        <div class="sidebar-heading text-center fw-bold">
             <i class="fa-solid fa-clock"></i> TimeForge
-            <div class="role-badge mt-1">Reponedor</div>
+            <div class="role-badge">Reponedor</div>
         </div>
-        <div class="list-group list-group-flush my-3">
-            <a href="#" class="list-group-item list-group-item-action bg-dark text-white active" data-target="sec-mihorario">
-                <i class="fa-solid fa-calendar-week me-2"></i> Mi Horario
-            </a>
-            <a href="#" class="list-group-item list-group-item-action bg-dark text-white" data-target="sec-resumen">
-                <i class="fa-solid fa-chart-simple me-2"></i> Mi Resumen
-            </a>
+        <div class="list-group list-group-flush my-2">
+            <a href="#" class="list-group-item list-group-item-action active" data-target="sec-mihorario"><i class="fa-solid fa-calendar-week me-2"></i> Mi Horario</a>
+            <a href="#" class="list-group-item list-group-item-action" data-target="sec-tickets"><i class="fa-solid fa-ticket me-2"></i> Mis Tickets</a>
+            <a href="#" class="list-group-item list-group-item-action" data-target="sec-resumen"><i class="fa-solid fa-chart-simple me-2"></i> Mi Resumen</a>
         </div>
     </aside>
 
-    <!-- MAIN -->
-    <main id="page-content-wrapper" class="bg-light w-100">
-
-        <nav class="navbar bg-white border-bottom px-4 py-3 d-flex align-items-center">
+    <main id="page-content-wrapper" class="w-100">
+        <nav class="navbar px-4">
             <button class="btn btn-outline-secondary me-3" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
-            <h2 class="fs-5 m-0" id="vista-titulo">Mi Horario Semanal</h2>
+            <h2 class="fs-5 m-0 fw-bold" id="vista-titulo">Mi Horario Semanal</h2>
             <div class="ms-auto d-flex align-items-center gap-3">
                 <div class="text-end d-none d-md-block">
                     <div class="fw-semibold small" id="session-username">—</div>
                     <div class="text-muted small" id="session-role">—</div>
                 </div>
-                <div class="avatar-circle bg-success"><i class="fa-solid fa-boxes-stacked"></i></div>
-                <button class="btn btn-outline-danger btn-sm" id="btn-logout">
-                    <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
-                </button>
+                <div class="avatar-circle"><i class="fa-solid fa-boxes-stacked"></i></div>
+                <button class="btn btn-outline-danger btn-sm" id="btn-logout"><i class="fa-solid fa-right-from-bracket me-1"></i> Salir</button>
             </div>
         </nav>
-
         <div class="container-fluid p-4">
 
             <!-- MI HORARIO -->
             <section id="sec-mihorario" class="view-section">
-                <div class="alert alert-success mb-4">
-                    <i class="fa-solid fa-circle-info me-2"></i>
-                    Aquí puedes consultar tus turnos asignados para la semana. Para solicitar cambios, contacta a tu supervisor.
-                </div>
+                <div class="alert alert-success mb-4"><i class="fa-solid fa-circle-info me-2"></i>Aquí puedes consultar tus turnos. ¿Necesitas algo? Crea un ticket.</div>
                 <div class="card shadow-sm mb-4">
-                    <div class="card-header fw-bold bg-white d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <span><i class="fa-regular fa-calendar me-2"></i>Horario Semanal</span>
                         <span class="badge bg-success rounded-pill" id="mis-horas">—</span>
                     </div>
                     <div class="card-body table-responsive">
                         <table class="table table-bordered text-center align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Hora</th>
-                                    <th>Lunes</th><th>Martes</th><th>Miércoles</th>
-                                    <th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th>
-                                </tr>
-                            </thead>
+                            <thead class="table-light"><tr><th>Hora</th><th>Lunes</th><th>Martes</th><th>Miércoles</th><th>Jueves</th><th>Viernes</th><th>Sábado</th><th>Domingo</th></tr></thead>
                             <tbody id="mi-calendario-body"></tbody>
                         </table>
                     </div>
                 </div>
-
                 <div class="row g-3">
-                    <div class="col-sm-4">
-                        <div class="card text-center shadow-sm border-success">
+                    <div class="col-sm-4"><div class="card text-center shadow-sm border-success"><div class="card-body"><i class="fa-solid fa-calendar-check fs-2 text-success mb-2"></i><div class="fs-3 fw-bold" id="res-turnos">—</div><div class="text-muted small">Turnos asignados</div></div></div></div>
+                    <div class="col-sm-4"><div class="card text-center shadow-sm border-success"><div class="card-body"><i class="fa-solid fa-calendar-days fs-2 text-success mb-2"></i><div class="fs-3 fw-bold" id="res-dias">—</div><div class="text-muted small">Días trabajados</div></div></div></div>
+                    <div class="col-sm-4"><div class="card text-center shadow-sm border-success"><div class="card-body"><i class="fa-solid fa-user-clock fs-2 text-success mb-2"></i><div class="fs-3 fw-bold" id="res-tipo">—</div><div class="text-muted small">Tipo de horario</div></div></div></div>
+                </div>
+            </section>
+
+            <!-- TICKETS -->
+            <section id="sec-tickets" class="view-section" style="display:none;">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm ticket-form-card">
+                            <div class="card-header"><i class="fa-solid fa-plus-circle me-2 text-success"></i>Crear Nuevo Ticket</div>
                             <div class="card-body">
-                                <i class="fa-solid fa-calendar-check fs-2 text-success mb-2"></i>
-                                <div class="fs-3 fw-bold" id="res-turnos">—</div>
-                                <div class="text-muted small">Turnos asignados</div>
+                                <div class="mb-3"><label class="form-label fw-semibold">Título</label><input type="text" class="form-control" id="tk-titulo" placeholder="Ej: Falta stock en pasillo 3"></div>
+                                <div class="mb-3"><label class="form-label fw-semibold">Categoría</label><select class="form-select" id="tk-categoria"><option>Reposición</option><option>Turno</option><option>Urgencia</option><option>Consulta</option><option>Otro</option></select></div>
+                                <div class="mb-3"><label class="form-label fw-semibold">Prioridad</label><select class="form-select" id="tk-prioridad"><option>Alta</option><option>Media</option><option>Baja</option></select></div>
+                                <div class="mb-3"><label class="form-label fw-semibold">Descripción</label><textarea class="form-control" id="tk-descripcion" rows="3" placeholder="Describe el problema..."></textarea></div>
+                                <button class="btn-ticket" id="btn-crear-ticket"><i class="fa-solid fa-paper-plane me-2"></i>Enviar al Supervisor</button>
+                                <div class="alert alert-success mt-3 d-none" id="tk-success"><i class="fa-solid fa-check-circle me-2"></i>Ticket enviado correctamente.</div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-4">
-                        <div class="card text-center shadow-sm border-success">
-                            <div class="card-body">
-                                <i class="fa-solid fa-calendar-days fs-2 text-success mb-2"></i>
-                                <div class="fs-3 fw-bold" id="res-dias">—</div>
-                                <div class="text-muted small">Días trabajados</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="card text-center shadow-sm border-success">
-                            <div class="card-body">
-                                <i class="fa-solid fa-user-clock fs-2 text-success mb-2"></i>
-                                <div class="fs-3 fw-bold" id="res-tipo">—</div>
-                                <div class="text-muted small">Tipo de horario</div>
-                            </div>
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header"><i class="fa-solid fa-list-check me-2"></i>Mis Tickets Enviados</div>
+                            <div class="card-body" id="lista-mis-tickets"><p class="text-muted text-center py-3">No tienes tickets aún.</p></div>
                         </div>
                     </div>
                 </div>
@@ -105,26 +86,11 @@
 
             <!-- RESUMEN -->
             <section id="sec-resumen" class="view-section" style="display:none;">
-                <div class="card shadow-sm">
-                    <div class="card-header fw-bold bg-white">Mi Resumen Laboral</div>
-                    <div class="card-body">
-                        <p class="text-muted">Aquí podrás ver un historial de tus turnos y actividades de reposición.</p>
-                        <div class="alert alert-warning">
-                            <i class="fa-solid fa-clock me-2"></i>
-                            Próximo turno: <strong>Lunes 08:00 - 16:00</strong>
-                        </div>
-                        <div class="alert alert-info">
-                            <i class="fa-solid fa-boxes-stacked me-2"></i>
-                            Recuerda revisar las áreas asignadas antes de iniciar tu turno.
-                        </div>
-                    </div>
-                </div>
+                <div class="card shadow-sm"><div class="card-header">Mi Resumen Laboral</div><div class="card-body"><p class="text-muted">Resumen de tus actividades de reposición.</p><div class="alert alert-warning"><i class="fa-solid fa-clock me-2"></i>Próximo turno: <strong>Lunes 08:00 - 16:00</strong></div></div></div>
             </section>
-
         </div>
     </main>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="../js/Auth.js"></script>
 <script src="../js/Store.js"></script>
