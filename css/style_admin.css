@@ -23,6 +23,8 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); }
 .sidebar-heading { color: #fff; font-size: 1.1rem; padding: 1.5rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
 .role-badge { display: inline-block; background: rgba(249,115,22,0.3); color: #fed7aa; border-radius: 20px; padding: 0.2rem 0.8rem; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.35rem; }
 .list-group-item { background: transparent !important; color: rgba(255,255,255,0.7) !important; border: none !important; padding: 0.85rem 1.25rem; font-size: 0.9rem; font-weight: 500; transition: all 0.2s; border-left: 3px solid transparent !important; }
+#list-fijos .list-group-item,
+#list-flex .list-group-item { background: white !important; color: var(--text) !important; border-bottom: 1px solid var(--border) !important; padding: 0.5rem 0.75rem; }
 .list-group-item:hover { color: #fff !important; background: rgba(255,255,255,0.1) !important; }
 .list-group-item.active { color: #fff !important; background: rgba(255,255,255,0.15) !important; border-left-color: #fb923c !important; }
 #wrapper.toggled #sidebar-wrapper { width: 0; }

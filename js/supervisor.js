@@ -154,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i class="fa-solid fa-grip-vertical text-muted me-2"></i>${e.nombre}
                 <span class="badge bg-${Store.getRolColor(e.rol)} ms-1" style="font-size:0.65rem;">${Store.getRolLabel(e.rol)}</span>
             </div>`).join('');
+        initDragAndDrop();
     }
 
     function initDragAndDrop() {
