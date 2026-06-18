@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>TimeForge — Cajero</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    body{font-family:'Segoe UI',sans-serif;}
+    #sb{min-height:100vh;width:256px;min-width:256px;transition:margin .25s;background:#1e293b;}
+    #wr.tog #sb{margin-left:-256px;}
+    .view-section.dn{display:none!important;}
+    .nl.active{background:#4f46e5!important;border-color:#4f46e5!important;}
+    .nl:not(.active):hover{background:rgba(255,255,255,.08)!important;color:#fff!important;}
+    .ti{background:#fff;border-radius:10px;padding:1rem;margin-bottom:.75rem;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+    .bp{background:#fef3c7;color:#92400e;border-radius:99px;padding:2px 10px;font-size:.75rem;font-weight:600;}
+    .bpr{background:#dbeafe;color:#1e40af;border-radius:99px;padding:2px 10px;font-size:.75rem;font-weight:600;}
+    .bres{background:#d1fae5;color:#065f46;border-radius:99px;padding:2px 10px;font-size:.75rem;font-weight:600;}
+    .rb{font-size:.7rem;background:rgba(255,255,255,.15);padding:2px 8px;border-radius:99px;}
+    .af{position:fixed;top:1rem;right:1rem;z-index:9999;min-width:280px;}
+    .sc{background:#fff;border-radius:12px;padding:1.1rem;display:flex;align-items:center;gap:1rem;box-shadow:0 1px 6px rgba(0,0,0,.07);}
+    .si{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;flex-shrink:0;}
+    .sn{font-size:1.6rem;font-weight:700;line-height:1;}.sl{color:#6c757d;font-size:.8rem;}
+    .cal{font-size:.7rem;padding:4px 6px;border-radius:6px;font-weight:600;}
+    table th,table td{vertical-align:middle;}
+  </style>
+</head>
+<body class="bg-light">
+<div th:if="${success}" class="alert alert-success alert-dismissible af shadow"><i class="fa-solid fa-circle-check me-2"></i><span th:text="${success}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+<div th:if="${error}"   class="alert alert-danger  alert-dismissible af shadow"><i class="fa-solid fa-triangle-exclamation me-2"></i><span th:text="${error}"></span><button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+
+<div class="d-flex" id="wr">
+  <aside id="sb" class="text-white">
+    <div class="text-center py-4 fw-bold border-bottom border-secondary px-3"><i class="fa-solid fa-clock"></i> TimeForge<div class="rb mt-1">Cajero</div></div>
+    <div class="list-group list-group-flush my-3">
+      <a href="#" class="list-group-item list-group-item-action bg-transparent text-white active nl" data-t="s1" data-ti="Mi Horario Semanal"><i class="fa-solid fa-calendar-week me-2"></i>Mi Horario</a>
+      <a href="#" class="list-group-item list-group-item-action bg-transparent text-white nl"        data-t="s2" data-ti="Mis Tickets"><i class="fa-solid fa-ticket me-2"></i>Mis Tickets</a>
+      <a href="#" class="list-group-item list-group-item-action bg-transparent text-white nl"        data-t="s3" data-ti="Mi Resumen"><i class="fa-solid fa-chart-bar me-2"></i>Mi Resumen</a>
+    </div>
+  </aside>
+
+  <main class="bg-light w-100">
+    <nav class="navbar bg-white border-bottom px-4 py-3 d-flex align-items-center">
+      <button class="btn btn-outline-secondary me-3" id="mt"><i class="fa-solid fa-bars"></i></button>
+      <h2 class="fs-5 m-0" id="vt">Mi Horario Semanal</h2>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <div class="text-end d-none d-md-block"><div class="fw-semibold small" sec:authentication="name">cajero</div><div class="text-muted small">Cajero</div></div>
+        <div style="width:36px;height:36px;border-radius:50%;background:#4f46e5;display:flex;align-items:center;justify-content:center;color:#fff;"><i class="fa-solid fa-cash-register"></i></div>
+        <form th:action="@{/logout}" method="post" class="d-inline">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <button class="btn btn-outline-danger btn-sm"><i class="fa-solid fa-right-from-bracket me-1"></i>Salir</button>
+        </form>
+      </div>
+    </nav>
+    <div class="container-fluid p-4">
+
+      <!-- MI HORARIO -->
+      <section id="s1" class="view-section">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white fw-semibold"><i class="fa-solid fa-calendar-week me-2" style="color:#4f46e5"></i>Mi Horario Semanal</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm mb-0 text-center">
+                <thead class="table-dark">
+                  <tr><th>Hora</th><th th:each="d : ${dias}" th:text="${d}"></th></tr>
+                </thead>
+                <tbody>
+                  <tr th:each="h : ${horas}">
+                    <td class="fw-bold text-muted small" th:text="${h}"></td>
+                    <td th:each="d : ${dias}">
+                      <th:block th:with="sch=${misHorarios.stream().filter(s -> s.dia.equals(d) and s.hora.equals(h)).findFirst().orElse(null)}">
+                        <div th:if="${sch != null}" class="cal text-white" style="background:#4f46e5"><i class="fa-solid fa-lock me-1"></i><span th:text="${h}"></span></div>
+                        <span th:if="${sch == null}" class="text-muted small">—</span>
+                      </th:block>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <p class="text-muted small mt-2"><i class="fa-solid fa-info-circle me-1"></i>Total horas: <strong th:text="${totalHoras} + 'h'"></strong></p>
+      </section>
+
+      <!-- TICKETS -->
+      <section id="s2" class="view-section dn">
+        <div class="row g-4">
+          <div class="col-lg-7">
+            <h6 class="fw-semibold mb-3"><i class="fa-solid fa-list me-2"></i>Mis Tickets</h6>
+            <div th:if="${#lists.isEmpty(misTickets)}" class="text-muted text-center py-5"><i class="fa-solid fa-inbox fs-1 d-block mb-2"></i>No tienes tickets aún.</div>
+            <div th:each="t : ${misTickets}" class="ti">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <strong th:text="${t.titulo}"></strong>
+                <span th:class="${t.estado.name() == 'pendiente'} ? 'bp' : (${t.estado.name() == 'proceso'} ? 'bpr' : 'bres')" th:text="${t.estado.label}"></span>
+              </div>
+              <div class="text-muted small mb-2" th:text="${t.descripcion}"></div>
+              <div class="d-flex gap-2 flex-wrap">
+                <span class="badge" th:classappend="${t.prioridad.name() == 'Alta'} ? 'bg-danger' : (${t.prioridad.name() == 'Media'} ? 'bg-warning text-dark' : 'bg-success')" th:text="${t.prioridad.name()}"></span>
+                <span class="badge bg-light text-dark border" th:text="${t.categoria}"></span>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="card shadow-sm">
+              <div class="card-header bg-white fw-semibold"><i class="fa-solid fa-plus me-2" style="color:#4f46e5"></i>Nuevo Ticket</div>
+              <div class="card-body">
+                <form th:action="@{/cajero/tickets/crear}" method="post">
+                  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                  <div class="mb-2"><label class="form-label small fw-semibold">Título</label>
+                    <input type="text" name="titulo" class="form-control form-control-sm" required placeholder="Describe el problema"/></div>
+                  <div class="mb-2"><label class="form-label small fw-semibold">Categoría</label>
+                    <select name="categoria" class="form-select form-select-sm"><option>Equipo</option><option>Cobro</option><option>Urgencia</option><option>Otro</option></select></div>
+                  <div class="mb-2"><label class="form-label small fw-semibold">Prioridad</label>
+                    <select name="prioridad" class="form-select form-select-sm">
+                      <option value="Alta">Alta</option><option value="Media" selected>Media</option><option value="Baja">Baja</option>
+                    </select></div>
+                  <div class="mb-3"><label class="form-label small fw-semibold">Descripción</label>
+                    <textarea name="descripcion" class="form-control form-control-sm" rows="3" required placeholder="Detalla el problema..."></textarea></div>
+                  <button type="submit" class="btn btn-sm w-100 text-white fw-semibold" style="background:#4f46e5"><i class="fa-solid fa-paper-plane me-1"></i>Enviar Ticket</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RESUMEN -->
+      <section id="s3" class="view-section dn">
+        <div class="row g-3">
+          <div class="col-sm-4"><div class="sc"><div class="si" style="background:#4f46e5"><i class="fa-solid fa-calendar-check"></i></div><div><div class="sn" th:text="${totalTurnos}">0</div><div class="sl">Turnos asignados</div></div></div></div>
+          <div class="col-sm-4"><div class="sc"><div class="si bg-success"><i class="fa-solid fa-clock"></i></div><div><div class="sn" th:text="${totalHoras} + 'h'">0h</div><div class="sl">Horas semanales</div></div></div></div>
+          <div class="col-sm-4"><div class="sc"><div class="si bg-info"><i class="fa-solid fa-id-badge"></i></div><div><div class="sn" th:text="${miEmpleado != null} ? ${miEmpleado.tipo.label} : '-'">-</div><div class="sl">Tipo de contrato</div></div></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  setTimeout(()=>document.querySelectorAll('.af').forEach(a=>{try{bootstrap.Alert.getOrCreateInstance(a).close();}catch(e){}}),4000);
+  document.getElementById('mt').addEventListener('click',()=>document.getElementById('wr').classList.toggle('tog'));
+  document.querySelectorAll('.nl').forEach(l=>{
+    l.addEventListener('click',e=>{
+      e.preventDefault();
+      document.querySelectorAll('.nl').forEach(x=>x.classList.remove('active'));l.classList.add('active');
+      document.querySelectorAll('.view-section').forEach(s=>s.classList.add('dn'));
+      const s=document.getElementById(l.dataset.t);if(s)s.classList.remove('dn');
+      const t=document.getElementById('vt');if(t&&l.dataset.ti)t.textContent=l.dataset.ti;
+    });
+  });
+</script>
+</body>
+</html>
