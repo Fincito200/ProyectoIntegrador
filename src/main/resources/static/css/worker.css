@@ -1,0 +1,47 @@
+body { font-family: 'Segoe UI', sans-serif; }
+
+#sb {
+  min-height: 100vh;
+  width: 256px; min-width: 256px;
+  transition: margin .25s;
+  background: #1e293b;
+}
+#wr.tog #sb { margin-left: -256px; }
+
+.view-section.dn { display: none !important; }
+
+/* El color .nl.active lo pone cada página inline con data-color */
+.nl:not(.active):hover { background: rgba(255,255,255,.08) !important; color: #fff !important; }
+
+/* Ticket items */
+.ti {
+  background: #fff; border-radius: 10px;
+  padding: 1rem; margin-bottom: .75rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+/* Badges estado */
+.bp   { background: #fef3c7; color: #92400e; border-radius: 99px; padding: 2px 10px; font-size: .75rem; font-weight: 600; }
+.bpr  { background: #dbeafe; color: #1e40af; border-radius: 99px; padding: 2px 10px; font-size: .75rem; font-weight: 600; }
+.bres { background: #d1fae5; color: #065f46; border-radius: 99px; padding: 2px 10px; font-size: .75rem; font-weight: 600; }
+
+/* Stat cards */
+.sc {
+  background: #fff; border-radius: 12px; padding: 1.1rem;
+  display: flex; align-items: center; gap: 1rem;
+  box-shadow: 0 1px 6px rgba(0,0,0,.07);
+}
+.si {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 1.2rem; flex-shrink: 0;
+}
+.sn { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+.sl { color: #6c757d; font-size: .8rem; }
+
+/* Celda de horario */
+.cal { font-size: .7rem; padding: 4px 6px; border-radius: 6px; font-weight: 600; }
+
+.rb { font-size: .7rem; background: rgba(255,255,255,.15); padding: 2px 8px; border-radius: 99px; }
+.af { position: fixed; top: 1rem; right: 1rem; z-index: 9999; min-width: 280px; }
+table th, table td { vertical-align: middle; }

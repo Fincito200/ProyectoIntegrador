@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeForge - Administrador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style_admin.css">
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="bg-dark text-white" id="sidebar-wrapper">
+        <div class="sidebar-heading text-center py-4 fw-bold border-bottom border-secondary">
+            <i class="fa-solid fa-clock"></i> TimeForge
+            <div class="role-badge mt-1">Admin</div>
+        </div>
+        <div class="list-group list-group-flush my-3">
+            <a href="#" class="list-group-item list-group-item-action bg-dark text-white active" data-target="sec-dashboard">
+                <i class="fa-solid fa-chart-pie me-2"></i> Resumen General
+            </a>
+            <a href="#" class="list-group-item list-group-item-action bg-dark text-white" data-target="sec-empleados">
+                <i class="fa-solid fa-users me-2"></i> Gestión de Empleados
+            </a>
+            <a href="#" class="list-group-item list-group-item-action bg-dark text-white" data-target="sec-horarios">
+                <i class="fa-solid fa-calendar-days me-2"></i> Gestión de Horarios
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main id="page-content-wrapper" class="bg-light w-100">
+
+        <!-- Topbar -->
+        <nav class="navbar bg-white border-bottom px-4 py-3 d-flex align-items-center">
+            <button class="btn btn-outline-secondary me-3" id="menu-toggle"><i class="fa-solid fa-bars"></i></button>
+            <h2 class="fs-5 m-0" id="vista-titulo">Resumen General</h2>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <div class="text-end d-none d-md-block">
+                    <div class="fw-semibold small" id="session-username">—</div>
+                    <div class="text-muted small" id="session-role">—</div>
+                </div>
+                <div class="avatar-circle bg-danger"><i class="fa-solid fa-shield-halved"></i></div>
+                <button class="btn btn-outline-danger btn-sm" id="btn-logout">
+                    <i class="fa-solid fa-right-from-bracket me-1"></i> Salir
+                </button>
+            </div>
+        </nav>
+
+        <div class="container-fluid p-4">
+
+            <!-- ── DASHBOARD ── -->
+            <section id="sec-dashboard" class="view-section">
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card border-primary">
+                            <div class="stat-icon bg-primary"><i class="fa-solid fa-users"></i></div>
+                            <div>
+                                <div class="stat-num" id="total-empleados">—</div>
+                                <div class="stat-label">Total Empleados</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card border-secondary">
+                            <div class="stat-icon bg-secondary"><i class="fa-solid fa-lock"></i></div>
+                            <div>
+                                <div class="stat-num" id="total-fijos">—</div>
+                                <div class="stat-label">Horario Fijo</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card border-success">
+                            <div class="stat-icon bg-success"><i class="fa-solid fa-arrows-up-down-left-right"></i></div>
+                            <div>
+                                <div class="stat-num" id="total-flex">—</div>
+                                <div class="stat-label">Horario Flexible</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="stat-card border-info">
+                            <div class="stat-icon bg-info"><i class="fa-solid fa-cash-register"></i></div>
+                            <div>
+                                <div class="stat-num" id="total-cajeros">—</div>
+                                <div class="stat-label">Cajeros</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow-sm">
+                    <div class="card-header fw-bold bg-white">Accesos Rápidos</div>
+                    <div class="card-body d-flex gap-3 flex-wrap">
+                        <button class="btn btn-outline-primary quick-nav" data-target="sec-empleados">
+                            <i class="fa-solid fa-user-plus me-2"></i>Agregar Empleado
+                        </button>
+                        <button class="btn btn-outline-success quick-nav" data-target="sec-horarios">
+                            <i class="fa-solid fa-calendar-plus me-2"></i>Agregar Horario
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── EMPLEADOS ── -->
+            <section id="sec-empleados" class="view-section" style="display:none;">
+                <div class="row g-4">
+                    <!-- Formulario -->
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header fw-bold bg-white">
+                                <i class="fa-solid fa-user-plus text-primary me-2"></i>Agregar Empleado
+                            </div>
+                            <div class="card-body">
+                                <form id="formAddEmployee">
+                                    <div class="mb-3">
+                                        <label class="form-label">Nombre completo</label>
+                                        <input type="text" class="form-control" id="emp-nombre" placeholder="Ej: Juan Pérez" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Rol</label>
+                                        <select class="form-select" id="emp-rol" required>
+                                            <option value="cajero">Cajero</option>
+                                            <option value="reponedor">Reponedor</option>
+                                            <option value="supervisor">Supervisor</option>
+                                            <option value="limpieza">Limpieza</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Tipo de horario</label>
+                                        <select class="form-select" id="emp-tipo" required>
+                                            <option value="fijo">Fijo (Full-time)</option>
+                                            <option value="flexible">Flexible (Part-time)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Horas por semana</label>
+                                        <input type="number" class="form-control" id="emp-horas" value="40" min="1" max="48" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="fa-solid fa-plus me-2"></i>Agregar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabla -->
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header fw-bold bg-white">Lista de Empleados</div>
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover align-middle m-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nombre</th><th>Rol</th><th>Tipo</th><th>Horas/Sem</th><th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabla-empleados"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── HORARIOS ── -->
+            <section id="sec-horarios" class="view-section" style="display:none;">
+                <div class="row g-4">
+                    <!-- Formulario -->
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-header fw-bold bg-white">
+                                <i class="fa-solid fa-calendar-plus text-success me-2"></i>Agregar Horario Fijo
+                            </div>
+                            <div class="card-body">
+                                <form id="formAddSchedule">
+                                    <div class="mb-3">
+                                        <label class="form-label">Empleado</label>
+                                        <select class="form-select" id="sch-empleado" required>
+                                            <option value="">Selecciona empleado</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Día</label>
+                                        <select class="form-select" id="sch-dia" required>
+                                            <option>Lunes</option><option>Martes</option>
+                                            <option>Miércoles</option><option>Jueves</option>
+                                            <option>Viernes</option><option>Sábado</option>
+                                            <option>Domingo</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Hora inicio</label>
+                                        <select class="form-select" id="sch-hora" required>
+                                            <option>06:00</option><option>08:00</option>
+                                            <option>10:00</option><option>12:00</option>
+                                            <option>14:00</option><option>16:00</option>
+                                            <option>18:00</option><option>20:00</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fa-solid fa-plus me-2"></i>Registrar Horario
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tabla -->
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header fw-bold bg-white">Horarios Registrados</div>
+                            <div class="card-body table-responsive p-0">
+                                <table class="table table-hover align-middle m-0">
+                                    <thead class="table-light">
+                                        <tr><th>Empleado</th><th>Día</th><th>Hora</th><th>Tipo</th><th></th></tr>
+                                    </thead>
+                                    <tbody id="tabla-horarios"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast-msg" class="toast align-items-center text-white bg-success border-0" role="alert">
+        <div class="d-flex">
+            <div class="toast-body fw-semibold"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/Auth.js"></script>
+<script src="../js/Store.js"></script>
+<script src="../js/admin.js"></script>
+<script>
+// Accesos rápidos desde dashboard
+document.querySelectorAll('.quick-nav').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelector(`[data-target="${btn.dataset.target}"]`).click();
+    });
+});
+</script>
+</body>
+</html>
