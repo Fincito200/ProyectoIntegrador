@@ -36,7 +36,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(a -> a
-                .requestMatchers("/css/**","/js/**","/h2-console/**").permitAll()
+                .requestMatchers("/login", "/login/**", "/css/**", "/js/**", "/h2-console/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/supervisor/**").hasRole("SUPERVISOR")
                 .requestMatchers("/cajero/**").hasRole("CAJERO")
@@ -51,7 +51,11 @@ public class SecurityConfig {
                 .failureUrl("/login?error=true")
                 .permitAll()
             )
-            .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/login?logout=true").permitAll())
+            .logout(l -> l
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout=true")
+                .permitAll()
+            )
             .csrf(c -> c.ignoringRequestMatchers("/h2-console/**"))
             .headers(h -> h.frameOptions(f -> f.sameOrigin()));
         return http.build();
