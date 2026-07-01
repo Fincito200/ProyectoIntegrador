@@ -18,6 +18,9 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // ── Evita duplicados al reiniciar el contenedor ──
+        if (empRepo.count() > 0) return;
+
         Empleado e1 = emp("María García",   Empleado.Rol.cajero,     Empleado.TipoContrato.fijo,     48);
         Empleado e2 = emp("Juan Pérez",     Empleado.Rol.reponedor,  Empleado.TipoContrato.fijo,     48);
         Empleado e3 = emp("Ana García",     Empleado.Rol.supervisor, Empleado.TipoContrato.fijo,     48);
@@ -51,8 +54,8 @@ public class DataInitializer implements CommandLineRunner {
         return Horario.builder().empleado(e).dia(d).hora(h).tipo(Horario.TipoHorario.fijo).build();
     }
     private Ticket tkt(String ti, String de, String ca, Ticket.Prioridad pr,
-                       Empleado.Rol ro, String au, Ticket.EstadoTicket es) {
+                        Empleado.Rol ro, String au, Ticket.EstadoTicket es) {
         return Ticket.builder().titulo(ti).descripcion(de).categoria(ca).prioridad(pr)
-               .rol(ro).autor(au).estado(es).fecha(LocalDateTime.now()).build();
+                .rol(ro).autor(au).estado(es).fecha(LocalDateTime.now()).build();
     }
 }
